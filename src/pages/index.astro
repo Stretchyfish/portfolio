@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+
+const work = await getCollection('work');
+const tags = [...new Set(work.flatMap((item) => item.data.tags))].sort((a, b) => a.localeCompare(b));
+const base = import.meta.env.BASE_URL;
+const total = String(work.length).padStart(2, '0');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#b7470d" />
+    <meta name="description" content="A thoughtful portfolio of selected work, experience, and skills." />
+    <title>Your Name — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href={`${base}styles.css`} />
+  </head>
+  <body>
+    <div class="portfolio-layout" id="top">
+      <aside class="profile-panel" id="about" aria-label="About Your Name">
+        <div class="profile-intro">
+          <p class="profile-kicker">DEVELOPER</p>
+          <h1>Your<br />Name<span class="period">.</span></h1>
+          <p class="profile-lede">I build digital things with care, curiosity, and a healthy respect for the details.</p>
+          <p class="profile-bio">Software engineer focused on thoughtful products, dependable systems, and making complex ideas feel simple.</p>
+          <a class="profile-cta" href="mailto:hello@example.com">LET’S TALK <span aria-hidden="true">↗</span></a>
+        </div>
+        <span class="profile-orbit orbit-one" aria-hidden="true"></span><span class="profile-orbit orbit-two" aria-hidden="true"></span>
+      </aside>
+      <figure class="seam-portrait"><img src={`${base}media/portrait-personal.png`} alt="Portrait of the portfolio owner, looking to the right." /></figure>
+
+      <div class="work-panel">
+        <header class="canvas-header"><a href="#work" class="canvas-brand">A SMALL COLLECTION OF THINGS I’VE MADE</a><span>PORTFOLIO <i>© 2026</i></span></header>
+        <main>
+          <section class="work-content" id="work" aria-labelledby="work-title">
+            <div class="canvas-heading"><div><p class="canvas-eyebrow">SELECTED WORK <span>({total})</span></p><h2 id="work-title">Ideas in <em>orbit.</em></h2></div><p class="canvas-description">Projects, roles, and experiments.<br />Pick one to take a closer look.</p></div>
+            <div class="filter-area">
+              <div class="filter-label"><span>FIND YOUR WAY THROUGH</span><span class="filter-hint">Filter by a connecting thread</span></div>
+              <div class="filters" role="group" aria-label="Filter work by tag">
+                <button class="filter-chip active" data-filter="all" aria-pressed="true">Everything <span>{total}</span></button>
+                {tags.map((tag) => <button class="filter-chip" data-filter={tag} aria-pressed="false">{tag} <span>{String(work.filter((item) => item.data.tags.includes(tag)).length).padStart(2, '0')}</span></button>)}
+              </div>
+              <div class="filter-tools">
+                <div class="type-filters" role="group" aria-label="Filter by work type"><button class="type-button active" data-type="all">ALL</button><button class="type-button" data-type="experience">EXPERIENCE</button><button class="type-button" data-type="project">PROJECTS</button></div>
+                <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="work-search" type="search" placeholder="Search the orbit" aria-label="Search work" /></label>
+              </div>
+            </div>
+            <div class="results-line"><span id="results-label">Showing everything</span><span>{total} ITEMS</span></div>
+            <div class="bubble-field" id="work-grid">
+              {work.map((item, index) => <a class="work-card bubble" href={`${base}projects/${item.id.replace(/\.mdx?$/, '')}/`} data-type={item.data.type} data-tags={item.data.tags.join(',')} title={item.data.summary} aria-label={`${item.data.title}, ${item.data.type}, ${item.data.date}`}><span class="bubble-top"><span class="bubble-kind">{item.data.type === 'project' ? 'PROJECT' : 'ROLE'}</span><span class="bubble-year">{item.data.date}</span></span><span class="bubble-index">{String(index + 1).padStart(2, '0')}</span><span class="bubble-content"><span class="item-org">{item.data.organization}</span><strong>{item.data.title}</strong></span><span class="bubble-tags">{item.data.tags.slice(0, 2).map((tag) => <span class="tag">{tag}</span>)}</span><span class="bubble-arrow" aria-hidden="true">↗</span></a>)}
+            </div>
+            <p class="empty-state" id="empty-state" hidden>No work found in this orbit. Try a different tag or search.</p>
+            <div class="canvas-footer"><span>THERE’S MORE TO THE STORY</span><a href="mailto:hello@example.com">GET IN TOUCH <span aria-hidden="true">↗</span></a></div>
+          </section>
+        </main>
+      </div>
+    </div>
+    <script type="module" src={`${base}script.js`}></script>
+  </body>
+</html>
