@@ -1,8 +1,8 @@
 # Portfolio
 
-This is a static Astro portfolio. Work cards, their highlighted tags, and project detail pages are generated from Markdown files in `src/content/work/`.
+This is a static Astro portfolio. The accomplishment bubbles and project detail pages are generated from Markdown files in `src/content/work/`.
 
-The **What I’m working on** bubbles come from the tags on experience entries whose `date` contains `NOW`, `PRESENT`, or `CURRENT`. Clicking one filters the work list by that tag. Edit those tags in the relevant Markdown file to change the bubbles.
+The **What I’m working on** bubbles come from the tags on experience entries whose `date` contains `NOW`, `PRESENT`, or `CURRENT`. Clicking one filters the accomplishment bubbles by that tag; click it again to show all of them. Edit those tags in the relevant Markdown file to change the bubbles.
 
 ## Add a project or role
 
