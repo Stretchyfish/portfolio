@@ -21,11 +21,3 @@ domainButtons.forEach((button) => {
   });
 });
 
-const portrait = document.querySelector('.seam-portrait');
-function updatePortraitVisibility() {
-  const hide = window.innerWidth > 800 && window.scrollY > Math.min(200, window.innerHeight * .25);
-  portrait?.classList.toggle('is-scrolled', hide);
-}
-window.addEventListener('scroll', updatePortraitVisibility, { passive: true });
-window.addEventListener('resize', updatePortraitVisibility);
-updatePortraitVisibility();

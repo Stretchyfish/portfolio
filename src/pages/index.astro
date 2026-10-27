@@ -27,20 +27,22 @@ const base = import.meta.env.BASE_URL;
           <span class="profile-orbit orbit-one"></span><span class="profile-orbit orbit-two"></span>
         </div>
         <aside class="profile-intro" aria-label="About Mikkel Skov Maarssø">
-          <h1>Mikkel <span class="name-skov">Skov</span><br class="name-break" />Maarssø</h1>
+          <h1>Mikkel Skov Maarssø</h1>
           <p class="profile-kicker">DEVELOPER</p>
-          <p class="profile-lede">I build digital things with care, curiosity, and a healthy respect for the details.</p>
-          <a class="profile-cta" href="mailto:hello@example.com">LET’S TALK <span aria-hidden="true">↗</span></a>
-          <section class="profile-domains" aria-labelledby="profile-domains-title">
-            <h2 id="profile-domains-title">DOMAINS</h2>
-            <div class="profile-domain-list">
-              <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=420&q=80')`}><span>Robotics</span></a>
-              <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=420&q=80')`}><span>Autonomous<br />driving</span></a>
-              <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=420&q=80')`}><span>Computer<br />science</span></a>
-            </div>
-          </section>
+          <div class="profile-summary">
+            <p class="profile-lede">I build digital things with care, curiosity, and a healthy respect for the details.</p>
+            <a class="profile-cta" href="mailto:hello@example.com">LET’S TALK <span aria-hidden="true">↗</span></a>
+          </div>
         </aside>
         <figure class="seam-portrait"><img src={`${base}media/portrait-personal.png`} alt="Portrait of the portfolio owner, looking to the right." /></figure>
+        <section class="profile-domains" aria-labelledby="profile-domains-title">
+          <h2 id="profile-domains-title">DOMAINS</h2>
+          <div class="profile-domain-list">
+            <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=420&q=80')`}><span>Robotics</span></a>
+            <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=420&q=80')`}><span>Autonomous<br />driving</span></a>
+            <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=420&q=80')`}><span>Computer<br />science</span></a>
+          </div>
+        </section>
       </div>
 
       <div class="work-panel">
