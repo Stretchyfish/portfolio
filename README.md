@@ -2,6 +2,8 @@
 
 This is a static Astro portfolio. Work cards, their highlighted tags, and project detail pages are generated from Markdown files in `src/content/work/`.
 
+The **What I’m working on** bubbles come from the tags on experience entries whose `date` contains `NOW`, `PRESENT`, or `CURRENT`. Clicking one filters the work list by that tag. Edit those tags in the relevant Markdown file to change the bubbles.
+
 ## Add a project or role
 
 Create a Markdown file such as `src/content/work/my-project.md`:

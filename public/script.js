@@ -1,5 +1,5 @@
 const cards = [...document.querySelectorAll('.work-card')];
-const tagButtons = [...document.querySelectorAll('.filter-chip')];
+const tagButtons = [...document.querySelectorAll('.filter-chip, .domain-bubble')];
 const typeButtons = [...document.querySelectorAll('.type-button')];
 const searchInput = document.querySelector('#work-search');
 const resultsLabel = document.querySelector('#results-label');
@@ -33,12 +33,18 @@ function updateResults() {
 tagButtons.forEach((button) => {
   button.addEventListener('click', () => {
     selectedTag = button.dataset.filter;
+    if (button.classList.contains('domain-bubble')) {
+      selectedType = 'all';
+      searchInput.value = '';
+      typeButtons.forEach((item) => item.classList.toggle('active', item.dataset.type === 'all'));
+    }
     tagButtons.forEach((item) => {
       const active = item === button;
       item.classList.toggle('active', active);
       item.setAttribute('aria-pressed', String(active));
     });
     updateResults();
+    if (button.classList.contains('domain-bubble')) document.querySelector('#selected-work')?.scrollIntoView();
   });
 });
 
@@ -51,3 +57,12 @@ typeButtons.forEach((button) => {
 });
 
 searchInput?.addEventListener('input', updateResults);
+
+const portrait = document.querySelector('.seam-portrait');
+function updatePortraitVisibility() {
+  const hide = window.innerWidth > 800 && window.scrollY > Math.min(200, window.innerHeight * .25);
+  portrait?.classList.toggle('is-scrolled', hide);
+}
+window.addEventListener('scroll', updatePortraitVisibility, { passive: true });
+window.addEventListener('resize', updatePortraitVisibility);
+updatePortraitVisibility();
