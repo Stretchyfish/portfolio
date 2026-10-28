@@ -1,42 +1,37 @@
 # Portfolio
 
-This is a static Astro portfolio. The accomplishment bubbles and project detail pages are generated from Markdown files in `src/content/work/`.
+This is a static Astro portfolio. Each Markdown file in `src/content/work/` is one portfolio entry. Every entry appears in **Info** and gets a shareable detail page.
 
-The **What I’m working on** bubbles come from the tags on experience entries whose `date` contains `NOW`, `PRESENT`, or `CURRENT`. Clicking one filters the accomplishment bubbles by that tag; click it again to show all of them. Edit those tags in the relevant Markdown file to change the bubbles.
+## Add an entry
 
-## Add a project or role
-
-Create a Markdown file such as `src/content/work/my-project.md`:
+Create a file such as `src/content/work/my-project.md`:
 
 ```md
 ---
 title: My project
-type: project
-date: '2026'
-organization: PERSONAL · EXPERIMENT
-summary: A short sentence shown on the portfolio card.
-tags: [Astro, Design, Open source]
-featured: true
-link: https://example.com
+tags: [project, accomplishment, Rust]
 ---
 
-## The problem
-
-Write the longer project story here using Markdown.
-
-![A project screenshot](../../assets/my-project/screenshot.webp)
+Describe the project here with Markdown. You can add headings, links, lists, and images.
 ```
 
-Place project images in `src/assets/my-project/`. The relative image path above lets Astro process the image and works on both a local preview and the GitHub Pages project URL. `type`, `date`, `organization`, `summary`, and `tags` are checked against the content schema in `src/content.config.ts`.
+Only `title` and `tags` are required. An optional `cover` points to an image in `public/`, for example `cover: media/my-project.webp` for `public/media/my-project.webp`. The cover appears in the popup and on the detail page.
 
-## Run locally
+Tags control where an entry appears:
 
-Install dependencies, then run `npm run dev`. Run `npm run build` to create the static site in `dist/` and `npm run preview` to view that build.
+- Every file appears in **Info**, where visitors can search by title, tags, and body text.
+- `accomplishment` adds it to **Noteworthy accomplishments**.
+- `working-on` adds it to **What I’m working on**. New bubbles automatically continue the overlapping triangle pattern and floating motion.
+- `project`, `experience`, `skill`, `publication`, and `education` connect it to the five Info category bubbles. You can add any other descriptive tags too.
 
-## Publish on GitHub Pages
+A file may have both placement tags. Clicking either kind of bubble opens its Markdown content in a popup. The filename determines its direct URL: `my-project.md` becomes `/projects/my-project/`.
 
-The workflow in `.github/workflows/deploy.yml` builds and deploys the site whenever `main` is updated. In the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. The site automatically uses `/portfolio/` as its base URL on GitHub Pages and `/` in local development.
+For images inside the Markdown body, put files in `src/assets/my-project/` and reference them with a relative path such as `![Screenshot](../../assets/my-project/screenshot.webp)`.
 
-Before publishing, replace the sample name, initials, email address, availability text, and profile copy in `src/pages/index.astro` and `src/pages/projects/[slug].astro`, plus the fictional projects and roles in `src/content/work/`.
+## Run and publish
 
-The portrait at the split between the orange profile panel and light project area is `public/media/portrait-personal.png`. To change it, replace that file with another transparent PNG and update its alt text in `src/pages/index.astro`.
+Run `npm run dev` for a local preview. The GitHub Actions workflow in `.github/workflows/deploy.yml` runs `npm ci` and `npm run build` after a push to `main`, then publishes the static `dist/` folder to GitHub Pages. Set **Pages → Build and deployment → Source** to **GitHub Actions** in the repository settings.
+
+The three accomplishment entries and four working-on entries have placeholder descriptions ready for your own details. The portrait is `public/media/portrait-personal.png`.
+
+The five contact icons are configured in `src/pages/index.astro` under `contactLinks`. GitHub points to this repository's account; email, LinkedIn, phone, and YouTube use placeholders until you replace them.

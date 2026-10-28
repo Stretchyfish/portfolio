@@ -1,11 +1,33 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 const work = await getCollection('work');
-const currentDomains = [...new Set(work
-  .filter((item) => item.data.type === 'experience' && /\b(now|present|current)\b/i.test(item.data.date))
-  .flatMap((item) => item.data.tags))];
+const workDetails = await Promise.all(work.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
+const hasTag = (entry, tag) => entry.data.tags.some((value) => value.trim().toLowerCase() === tag);
+const accomplishments = work.filter((entry) => hasTag(entry, 'accomplishment'));
+const workingOn = work.filter((entry) => hasTag(entry, 'working-on'));
+const placementTags = new Set(['accomplishment', 'working-on']);
+const visibleTags = (tags) => tags.filter((tag) => !placementTags.has(tag.trim().toLowerCase()));
+const infoCategories = [
+  { id: 'experience', color: 'experience', label: 'Experience', singular: 'role', plural: 'roles', icon: 'M3 7h18v13H3z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M3 12h18 M10 12v2h4v-2' },
+  { id: 'project', color: 'projects', label: 'Projects', singular: 'project', plural: 'projects', icon: 'M12 2 3 7v10l9 5 9-5V7z M3 7l9 5 9-5 M12 12v10' },
+  { id: 'skill', color: 'skills', label: 'Skills', singular: 'skill', plural: 'skills', icon: 'M5 20v-6 M10 20V9 M15 20V5 M20 20V2' },
+  { id: 'publication', color: 'publications', label: 'Publications', singular: 'publication', plural: 'publications', icon: 'M12 6c-2-1.5-5-1.5-9-1v14c4-.5 7-.5 9 1 2-1.5 5-1.5 9-1V5c-4-.5-7-.5-9 1z M12 6v13' },
+  { id: 'education', color: 'education', label: 'Education', singular: 'entry', plural: 'entries', icon: 'm2 9 10-5 10 5-10 5z M6 11v5c3 2.5 9 2.5 12 0v-5 M22 9v6' },
+].map((category) => {
+  const count = work.filter((entry) => hasTag(entry, category.id)).length;
+  return { ...category, detail: `${count} ${count === 1 ? category.singular : category.plural}` };
+});
+const firstParagraph = (body) => body.split(/\n\s*\n/).map((part) => part.trim()).find((part) => part && !part.startsWith('#')) ?? '';
 const base = import.meta.env.BASE_URL;
+// Replace the placeholder destinations below with your own contact details.
+const contactLinks = {
+  email: 'mailto:hello@example.com',
+  linkedin: 'https://www.linkedin.com/in/your-profile/',
+  phone: 'tel:+0000000000',
+  github: 'https://github.com/Stretchyfish',
+  youtube: 'https://www.youtube.com/@your-channel',
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -27,11 +49,17 @@ const base = import.meta.env.BASE_URL;
           <span class="profile-orbit orbit-one"></span><span class="profile-orbit orbit-two"></span>
         </div>
         <aside class="profile-intro" aria-label="About Mikkel Skov Maarssø">
-          <h1>Mikkel Skov Maarssø</h1>
+          <h1><span class="profile-name">Mikkel Skov Maarssø</span></h1>
           <p class="profile-kicker">DEVELOPER</p>
           <div class="profile-summary">
             <p class="profile-lede">I build digital things with care, curiosity, and a healthy respect for the details.</p>
-            <a class="profile-cta" href="mailto:hello@example.com">LET’S TALK <span aria-hidden="true">↗</span></a>
+            <nav class="profile-socials" aria-label="Contact and social profiles">
+              <a class="profile-social" href={contactLinks.email} aria-label="Email" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+              <a class="profile-social" href={contactLinks.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.55V9h3.57v11.45Z"/></svg></a>
+              <a class="profile-social" href={contactLinks.phone} aria-label="Phone" title="Phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 3.09 5.18 2 2 0 0 1 5.08 3h3a2 2 0 0 1 2 1.72l.4 2.81a2 2 0 0 1-.57 1.7L8.2 10.94a16 16 0 0 0 4.86 4.86l1.71-1.71a2 2 0 0 1 1.7-.57l2.81.4A2 2 0 0 1 22 16.92Z"/></svg></a>
+              <a class="profile-social" href={contactLinks.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.76-.24.76-.54v-2.08c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.23-1.62-1.23-1.62-1.01-.69.08-.67.08-.67 1.12.08 1.71 1.15 1.71 1.15 1 .1.74 1.96 3.23 1.38.1-.73.39-1.23.71-1.51-2.47-.28-5.07-1.24-5.07-5.52 0-1.22.44-2.22 1.15-3-.11-.28-.5-1.42.11-2.96 0 0 .94-.3 3.08 1.15A10.7 10.7 0 0 1 12 6.71c.95 0 1.9.13 2.8.38 2.14-1.45 3.07-1.15 3.07-1.15.61 1.54.23 2.68.12 2.96.72.78 1.14 1.78 1.14 3 0 4.29-2.6 5.24-5.08 5.52.4.34.76 1.02.76 2.06v2.61c0 .3.2.64.77.54A11.2 11.2 0 0 0 12 .8Z"/></svg></a>
+              <a class="profile-social" href={contactLinks.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.12-2.12C19 4.58 12 4.58 12 4.58s-7 0-8.88.5A3 3 0 0 0 1 7.2 31.5 31.5 0 0 0 .5 12 31.5 31.5 0 0 0 1 16.8a3 3 0 0 0 2.12 2.12c1.88.5 8.88.5 8.88.5s7 0 8.88-.5A3 3 0 0 0 23 16.8a31.5 31.5 0 0 0 .5-4.8 31.5 31.5 0 0 0-.5-4.8ZM9.7 15.54V8.46L15.8 12l-6.1 3.54Z"/></svg></a>
+            </nav>
           </div>
         </aside>
         <figure class="seam-portrait"><img src={`${base}media/portrait-personal.png`} alt="Portrait of the portfolio owner, looking to the right." /></figure>
@@ -48,21 +76,57 @@ const base = import.meta.env.BASE_URL;
       <div class="work-panel">
         <main>
           <section class="work-content" id="work" aria-labelledby="work-title">
-            {currentDomains.length > 0 && <section class="current-domains" aria-labelledby="domains-title">
+            {workingOn.length > 0 && <section class="current-domains" aria-labelledby="domains-title">
               <div class="current-domains-heading"><h2 id="domains-title">What I’m <em>working on.</em></h2></div>
-              <div class="domain-bubbles" role="group" aria-label="Filter work by what I’m working on">
-                {currentDomains.map((domain) => <button class="domain-bubble" type="button" data-filter={domain} aria-pressed="false" aria-label={`Show ${domain} work`}><strong>{domain}</strong></button>)}
+              <div class:list={['domain-bubbles', { 'domain-bubbles--four': workingOn.length === 4 }]}>
+                {workingOn.map((entry) => <a class="domain-bubble" href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id} aria-label={`Read about ${entry.data.title}`}><strong>{entry.data.title}</strong></a>)}
               </div>
             </section>}
             <div class="canvas-heading" id="selected-work"><h2 id="work-title">Noteworthy <em>accomplishments.</em></h2></div>
             <div class="bubble-field" id="work-grid">
-              {work.map((item) => <a class="work-card bubble" href={`${base}projects/${item.id.replace(/\.mdx?$/, '')}/`} data-type={item.data.type} data-tags={item.data.tags.join(',')} title={item.data.summary} aria-label={`${item.data.title}, ${item.data.type}, ${item.data.date}`}><span class="bubble-top">{item.data.type === 'project' ? 'PROJECT' : 'ROLE'} · {item.data.date}</span><span class="bubble-content"><strong>{item.data.title}</strong><span class="item-org">{item.data.organization}</span></span></a>)}
+              {accomplishments.map((entry) => <a class="work-card bubble" href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id} aria-label={`Read about ${entry.data.title}`}><span class="bubble-top">ACCOMPLISHMENT</span><span class="bubble-content"><strong>{entry.data.title}</strong><span class="item-org">{visibleTags(entry.data.tags).filter((tag) => !['project', 'experience', 'skill', 'publication', 'education'].includes(tag)).slice(0, 2).join(' · ')}</span></span></a>)}
             </div>
+            <section class="info-section" id="info" aria-labelledby="info-title">
+              <div class="info-heading">
+                <h2 id="info-title">Info<span>.</span></h2>
+                <p>A little more about the work behind the work.</p>
+              </div>
+              <label class="info-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+                <input id="info-search" type="search" placeholder="Search info…" autocomplete="off" aria-label="Search info" />
+              </label>
+              <div class="info-bubbles" role="group" aria-label="Explore info categories">
+                {infoCategories.map((category) => <button class={`info-bubble info-bubble--${category.color}`} type="button" data-info-category={category.id} aria-pressed="false" aria-controls="info-list">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={category.icon}/></svg>
+                  <strong>{category.label}</strong><span>{category.detail}</span>
+                </button>)}
+              </div>
+              <div class="info-results" id="info-results">
+                <p class="info-status" id="info-status" role="status">{work.length} {work.length === 1 ? 'entry' : 'entries'}</p>
+                <div class="info-list" id="info-list">
+                  {work.map((entry) => <article class="info-item" data-info-tags={entry.data.tags.map((tag) => tag.trim().toLowerCase()).join(',')} data-search={`${entry.data.title} ${entry.data.tags.join(' ')} ${entry.body}`.toLowerCase()}>
+                    <div><span class="info-item-category">{visibleTags(entry.data.tags).join(' · ') || 'Info'}</span></div>
+                    <h3><a href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id}>{entry.data.title}</a></h3>
+                    <p>{firstParagraph(entry.body)}</p>
+                  </article>)}
+                </div>
+              </div>
+            </section>
             <div class="canvas-footer"><span>THERE’S MORE TO THE STORY</span><a href="mailto:hello@example.com">GET IN TOUCH <span aria-hidden="true">↗</span></a></div>
           </section>
         </main>
       </div>
     </div>
+    <dialog class="work-dialog" id="work-dialog" aria-label="Work details">
+      <div class="work-dialog-header"><span>SELECTED WORK</span><button class="work-dialog-close" type="button" aria-label="Close details">×</button></div>
+      {workDetails.map(({ entry, Content }) => <article class="work-dialog-detail" data-detail-id={entry.id} hidden>
+        <p class="work-dialog-eyebrow">{visibleTags(entry.data.tags).join(' · ')}</p>
+        <h2>{entry.data.title}</h2>
+        {entry.data.cover && <img class="work-dialog-cover" src={`${base}${entry.data.cover.replace(/^\/+/, '')}`} alt={`Cover for ${entry.data.title}`} />}
+        <div class="project-tags">{visibleTags(entry.data.tags).map((tag) => <span class="tag">{tag}</span>)}</div>
+        <div class="markdown-content"><Content /></div>
+      </article>)}
+    </dialog>
     <script type="module" src={`${base}script.js`}></script>
   </body>
 </html>
