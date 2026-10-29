@@ -12,7 +12,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { title, tags, cover } = entry.data;
 const visibleTags = tags.filter((tag) => !['accomplishment', 'working-on'].includes(tag.trim().toLowerCase()));
-const description = entry.body.split(/\n\s*\n/).map((part) => part.trim()).find((part) => part && !part.startsWith('#')) ?? title;
+const description = (entry.body ?? '').split(/\n\s*\n/).map((part) => part.trim()).find((part) => part && !part.startsWith('#')) ?? title;
 const base = import.meta.env.BASE_URL;
 ---
 <!doctype html>
