@@ -1,6 +1,6 @@
 ---
 title: ISPRA 2026
-tags: [accomplishment]
+tags: [event]
 ---
 
 Details about ISPRA 2026 are coming soon.

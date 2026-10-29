@@ -1,6 +1,7 @@
 ---
 title: MAD-Urban
-tags: [accomplishment]
+tags: [project]
+cover: media/mad-urban-cover.webp
 ---
 
 Details about MAD-Urban are coming soon.

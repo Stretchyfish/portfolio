@@ -16,38 +16,6 @@ alignProfileEdge();
 window.addEventListener('resize', alignProfileEdge);
 document.fonts?.ready.then(alignProfileEdge);
 
-const infoButtons = [...document.querySelectorAll('.info-bubble')];
-const infoSearch = document.querySelector('#info-search');
-const infoItems = [...document.querySelectorAll('.info-item')];
-const infoStatus = document.querySelector('#info-status');
-let selectedInfoCategory = '';
-
-function updateInfo() {
-  if (!infoSearch || !infoStatus) return;
-
-  const query = infoSearch.value.trim().toLocaleLowerCase();
-  let matches = 0;
-
-  infoItems.forEach((item) => {
-    const matchesCategory = !selectedInfoCategory || item.dataset.infoTags.split(',').includes(selectedInfoCategory);
-    const matchesSearch = !query || item.dataset.search.includes(query);
-    item.hidden = !matchesCategory || !matchesSearch;
-    if (!item.hidden) matches++;
-  });
-
-  infoStatus.textContent = matches === 0 ? 'No matches found. Try another search or category.' : `${matches} ${matches === 1 ? 'entry' : 'entries'}`;
-}
-
-infoButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    selectedInfoCategory = selectedInfoCategory === button.dataset.infoCategory ? '' : button.dataset.infoCategory;
-    infoButtons.forEach((item) => item.setAttribute('aria-pressed', String(item.dataset.infoCategory === selectedInfoCategory)));
-    updateInfo();
-  });
-});
-
-infoSearch?.addEventListener('input', updateInfo);
-
 const workDialog = document.querySelector('#work-dialog');
 const workDetails = [...document.querySelectorAll('.work-dialog-detail')];
 

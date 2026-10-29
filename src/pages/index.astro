@@ -4,21 +4,17 @@ import { getCollection, render } from 'astro:content';
 const work = await getCollection('work');
 const workDetails = await Promise.all(work.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
 const hasTag = (entry, tag) => entry.data.tags.some((value) => value.trim().toLowerCase() === tag);
-const accomplishments = work.filter((entry) => hasTag(entry, 'accomplishment'));
-const workingOn = work.filter((entry) => hasTag(entry, 'working-on'));
-const placementTags = new Set(['accomplishment', 'working-on']);
+const categorySections = [
+  { id: 'professional-experience', lead: 'Professional', accent: 'Experience.', label: 'EXPERIENCE', tags: ['professional-experience'] },
+  { id: 'working-on', lead: 'What I’m', accent: 'working on.', label: 'NOW', tags: ['working-on'] },
+  { id: 'products-projects', lead: 'Products &', accent: 'projects.', label: 'PROJECT', tags: ['product', 'project'] },
+  { id: 'publications', lead: 'Publications &', accent: 'research.', label: 'PUBLICATION', tags: ['publication'] },
+  { id: 'events', lead: 'Events &', accent: 'Conferences.', label: 'EVENT', tags: ['event'] },
+  { id: 'education', lead: 'Education &', accent: 'Courses.', label: 'EDUCATION', tags: ['education'] },
+  { id: 'skills-tools', lead: 'Skills &', accent: 'Tools.', label: 'SKILL / TOOL', tags: ['skill', 'tool'] },
+].map((section) => ({ ...section, entries: work.filter((entry) => section.tags.some((tag) => hasTag(entry, tag))) }));
+const placementTags = new Set(['professional-experience', 'working-on']);
 const visibleTags = (tags) => tags.filter((tag) => !placementTags.has(tag.trim().toLowerCase()));
-const infoCategories = [
-  { id: 'experience', color: 'experience', label: 'Experience', singular: 'role', plural: 'roles', icon: 'M3 7h18v13H3z M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M3 12h18 M10 12v2h4v-2' },
-  { id: 'project', color: 'projects', label: 'Projects', singular: 'project', plural: 'projects', icon: 'M12 2 3 7v10l9 5 9-5V7z M3 7l9 5 9-5 M12 12v10' },
-  { id: 'skill', color: 'skills', label: 'Skills', singular: 'skill', plural: 'skills', icon: 'M5 20v-6 M10 20V9 M15 20V5 M20 20V2' },
-  { id: 'publication', color: 'publications', label: 'Publications', singular: 'publication', plural: 'publications', icon: 'M12 6c-2-1.5-5-1.5-9-1v14c4-.5 7-.5 9 1 2-1.5 5-1.5 9-1V5c-4-.5-7-.5-9 1z M12 6v13' },
-  { id: 'education', color: 'education', label: 'Education', singular: 'entry', plural: 'entries', icon: 'm2 9 10-5 10 5-10 5z M6 11v5c3 2.5 9 2.5 12 0v-5 M22 9v6' },
-].map((category) => {
-  const count = work.filter((entry) => hasTag(entry, category.id)).length;
-  return { ...category, detail: `${count} ${count === 1 ? category.singular : category.plural}` };
-});
-const firstParagraph = (body) => body.split(/\n\s*\n/).map((part) => part.trim()).find((part) => part && !part.startsWith('#')) ?? '';
 const base = import.meta.env.BASE_URL;
 // Replace the placeholder destinations below with your own contact details.
 const contactLinks = {
@@ -50,7 +46,7 @@ const contactLinks = {
         </div>
         <aside class="profile-intro" aria-label="About Mikkel Skov Maarssø">
           <h1><span class="profile-name">Mikkel Skov Maarssø</span></h1>
-          <p class="profile-kicker">DEVELOPER</p>
+          <p class="profile-kicker">Integration manager &amp; researcher in Autonomous Driving</p>
           <div class="profile-summary">
             <p class="profile-lede">I build digital things with care, curiosity, and a healthy respect for the details.</p>
             <nav class="profile-socials" aria-label="Contact and social profiles">
@@ -69,51 +65,32 @@ const contactLinks = {
             <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=420&q=80')`}><span>Robotics</span></a>
             <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=420&q=80')`}><span>Autonomous<br />driving</span></a>
             <a class="profile-domain" href="#work" style={`--domain-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=420&q=80')`}><span>Computer<br />science</span></a>
+            <a class="profile-domain" href="#work" style={`--domain-image: url('${base}media/computational-programming-domain.webp')`}><span>AI</span></a>
+            <a class="profile-domain profile-domain--rust" href="#work"><span>Rust</span></a>
+            <a class="profile-domain profile-domain--cpp" href="#work"><span>C++</span></a>
+            <a class="profile-domain profile-domain--python" href="#work"><span>Python</span></a>
+            <a class="profile-domain profile-domain--ros" href="#work"><span>ROS2</span></a>
           </div>
         </section>
       </div>
 
       <div class="work-panel">
         <main>
-          <section class="work-content" id="work" aria-labelledby="work-title">
-            {workingOn.length > 0 && <section class="current-domains" aria-labelledby="domains-title">
-              <div class="current-domains-heading"><h2 id="domains-title">What I’m <em>working on.</em></h2></div>
-              <div class:list={['domain-bubbles', { 'domain-bubbles--four': workingOn.length === 4 }]}>
-                {workingOn.map((entry) => <a class="domain-bubble" href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id} aria-label={`Read about ${entry.data.title}`}><strong>{entry.data.title}</strong></a>)}
-              </div>
-            </section>}
-            <div class="canvas-heading" id="selected-work"><h2 id="work-title">Noteworthy <em>accomplishments.</em></h2></div>
-            <div class="bubble-field" id="work-grid">
-              {accomplishments.map((entry) => <a class="work-card bubble" href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id} aria-label={`Read about ${entry.data.title}`}><span class="bubble-top">ACCOMPLISHMENT</span><span class="bubble-content"><strong>{entry.data.title}</strong><span class="item-org">{visibleTags(entry.data.tags).filter((tag) => !['project', 'experience', 'skill', 'publication', 'education'].includes(tag)).slice(0, 2).join(' · ')}</span></span></a>)}
-            </div>
-            <section class="info-section" id="info" aria-labelledby="info-title">
-              <div class="info-heading">
-                <h2 id="info-title">Info<span>.</span></h2>
-                <p>A little more about the work behind the work.</p>
-              </div>
-              <label class="info-search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
-                <input id="info-search" type="search" placeholder="Search info…" autocomplete="off" aria-label="Search info" />
-              </label>
-              <div class="info-bubbles" role="group" aria-label="Explore info categories">
-                {infoCategories.map((category) => <button class={`info-bubble info-bubble--${category.color}`} type="button" data-info-category={category.id} aria-pressed="false" aria-controls="info-list">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={category.icon}/></svg>
-                  <strong>{category.label}</strong><span>{category.detail}</span>
-                </button>)}
-              </div>
-              <div class="info-results" id="info-results">
-                <p class="info-status" id="info-status" role="status">{work.length} {work.length === 1 ? 'entry' : 'entries'}</p>
-                <div class="info-list" id="info-list">
-                  {work.map((entry) => <article class="info-item" data-info-tags={entry.data.tags.map((tag) => tag.trim().toLowerCase()).join(',')} data-search={`${entry.data.title} ${entry.data.tags.join(' ')} ${entry.body}`.toLowerCase()}>
-                    <div><span class="info-item-category">{visibleTags(entry.data.tags).join(' · ') || 'Info'}</span></div>
-                    <h3><a href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id}>{entry.data.title}</a></h3>
-                    <p>{firstParagraph(entry.body)}</p>
-                  </article>)}
+          <div class="work-content" id="work">
+            <div class="category-sections">
+              {categorySections.map((section) => <section class="category-section" aria-labelledby={`${section.id}-title`}>
+                <div class="category-heading"><h2 id={`${section.id}-title`}>{section.lead ? `${section.lead}\u00a0` : ''}<em>{section.accent}</em></h2><span>{String(section.entries.length).padStart(2, '0')}</span></div>
+                <div class="category-bubbles" role="region" aria-label={`${section.label} entries`} tabindex={section.entries.length ? 0 : undefined}>
+                  {section.entries.map((entry) => <a class:list={['category-bubble', { 'has-cover': !!entry.data.cover }]} href={`${base}projects/${entry.id.replace(/\.mdx?$/, '')}/`} data-work-id={entry.id} aria-label={`Read about ${entry.data.title}`}>
+                    {entry.data.cover && <img class="bubble-cover" src={`${base}${entry.data.cover.replace(/^\/+/, '')}`} alt="" loading="lazy" />}
+                    <strong>{entry.data.title}</strong>
+                  </a>)}
                 </div>
-              </div>
-            </section>
+                <p class="category-empty" hidden={section.entries.length > 0}>More to share soon.</p>
+              </section>)}
+            </div>
             <div class="canvas-footer"><span>THERE’S MORE TO THE STORY</span><a href="mailto:hello@example.com">GET IN TOUCH <span aria-hidden="true">↗</span></a></div>
-          </section>
+          </div>
         </main>
       </div>
     </div>
